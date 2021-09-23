@@ -53,10 +53,10 @@ ti = 1;
 gr_i = tf([r0],[ti 0]); % urcenie integralnej zlozky
 
 td = 3;
-gr_p = tf([r0*td],[ti 0]); % urcenie derivacnej zlozky
+gr_d = tf([r0*td],[ti 0]); % urcenie derivacnej zlozky
 
 
-gr_pid = gr_p + gr_i + gr_p; % pid regulator spolu (zapojeny paralelne)
+gr_pid = gr_p + gr_i + gr_d; % pid regulator spolu (zapojeny paralelne)
 
 %% priklad motor
 
@@ -82,25 +82,25 @@ reg_d = tf([r0*td],[ti 0]);
 % pouzijem len proporcionalny pre cely system (seriove zapojenie +
 % feedback)
 %
-%u --->O---->[ M1 ]----+---> y  
-%      |               |          
+%u --->O---->[ M1 ]----+---> y
+%      |               |
 %      +-----[ M2 ]<---+
 %   --> schema zapojenia testovania (M2 = 1, M1 = motor a regulator)
 
 step(feedback(funkcia_motoru*reg_tk,1)); %testovac na skok
 
-% skusanim tohto zapojenia a jeho odozvy hladame r0 v reg_p dovtedy kym
+% skusanim tohto zapojenia a jeho odozvy hladame tk v reg_tk dovtedy kym
 % system nekmita konstantne, potom mame final cislo v tomto pripade to
-% funguje ked tk = 280
+% funguje ked tk = 280, regulator tk je taky isty ako regulator proporcionalny ale vytvoril som novy lebo som v tom bol strateny
 
-% tvorba regulatoru podla tabulky v prezentacii
+%% tvorba regulatoru podla tabulky v prezentacii
 
 ik = 0.05; % na toto prideme pri stabilnom kmite s tk = 280 a 0.05 je perioda sinusovky
 
 r0 = 0.6*tk; % v prezentacii a tabulke je oznacene ako R0k
 ti = 0.5*ik; % v prezentacii a tabulke je oznacene ako Tk
 td = 0.12*ik; % v prezentacii a tabulke je oznacene ako Tk
-  
+
 %hodnoty treba zmenit podla toho aky regulator chceme
 
 % regulator PI
@@ -109,7 +109,7 @@ td = 0.12*ik; % v prezentacii a tabulke je oznacene ako Tk
 reg_p = tf([r0],1);
 reg_i = tf([r0],[ti 0]);
 reg_d = tf([r0*td],[ti 0]);
- 
+
 % regulator PI
 
 reg_pi = reg_i + reg_p;
@@ -120,13 +120,4 @@ reg_pid = reg_d + reg_p + reg_i;
 
 % odozva na skok sustavy motor a regulator
 
-step(feedback(reg_pid*funkcia_motoru,1)); 
-
-
-
-
-
-
-
-
-
+step(feedback(reg_pid*funkcia_motoru,1)); % regulator PID ale je nekvalitny, nasou ulohou je najst hodnoty aby to bolo gut
